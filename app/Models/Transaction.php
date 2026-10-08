@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 final class Transaction extends Model
 {
     protected $fillable = [
+        'company_id',
         'purchase_id',
         'card_id',
         'month',
