@@ -11,8 +11,23 @@ use App\Models\Purchase;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * @phpstan-type CancellationData array{
+ *     id: string,
+ *     authorization_id: string,
+ *     occurred_at: string
+ * }
+ * @phpstan-type EventResponse array{
+ *     received: true,
+ *     pending?: true
+ * }
+ */
 final class CancellationService
 {
+    /**
+     * @param  CancellationData  $data
+     * @return EventResponse
+     */
     public function process(array $data): array
     {
         $existingCancellation = Cancellation::query()

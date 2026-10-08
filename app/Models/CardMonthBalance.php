@@ -16,6 +16,9 @@ final class CardMonthBalance extends Model
         'limit_remaining_cents',
     ];
 
+    /**
+     * @return BelongsTo<Card, $this>
+     */
     public function card(): BelongsTo
     {
         return $this->belongsTo(Card::class);

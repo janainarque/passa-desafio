@@ -2,11 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Models\Cancellation;
 use App\Models\Card;
 use App\Models\CardMonthBalance;
 use App\Models\Company;
 use App\Models\Purchase;
+use App\Models\Transaction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Date;
 
 uses(RefreshDatabase::class);
 
@@ -24,7 +27,7 @@ function signedCancellationRequest(
     string $uri,
     array $payload,
 ) {
-    $timestamp = (string) time();
+    $timestamp = (string) Date::now()->getTimestamp();
 
     $body = json_encode(
         $payload,
@@ -601,13 +604,13 @@ it('nao processa a mesma cancellation duas vezes', function (): void {
         ->firstOrFail();
 
     expect(
-        App\Models\Cancellation::query()
+        Cancellation::query()
             ->where('purchase_id', $purchase->id)
             ->count()
     )->toBe(1);
 
     expect(
-        App\Models\Transaction::query()
+        Transaction::query()
             ->where('purchase_id', $purchase->id)
             ->where('type', 'cancellation_release')
             ->count()

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\Purchase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Date;
 
 uses(RefreshDatabase::class);
 
@@ -20,7 +21,7 @@ function signedCaptureEdgeRequest(
     string $uri,
     array $payload,
 ) {
-    $timestamp = (string) time();
+    $timestamp = (string) Date::now()->getTimestamp();
 
     $body = json_encode(
         $payload,

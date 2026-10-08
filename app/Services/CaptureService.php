@@ -12,8 +12,27 @@ use App\Models\PurchaseIssue;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * @phpstan-type CaptureData array{
+ *     id: string,
+ *     authorization_id: string,
+ *     sequence: int,
+ *     amount_cents: int,
+ *     currency: string,
+ *     final: bool,
+ *     occurred_at: string
+ * }
+ * @phpstan-type EventResponse array{
+ *     received: true,
+ *     pending?: true
+ * }
+ */
 final class CaptureService
 {
+    /**
+     * @param  CaptureData  $data
+     * @return EventResponse
+     */
     public function process(array $data): array
     {
         $existingCapture = Capture::query()

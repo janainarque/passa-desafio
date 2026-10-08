@@ -36,13 +36,13 @@ final class CardStatementController extends Controller
             ->where('month', $month)
             ->first();
 
-        $limitCents = $monthBalance?->limit_cents
+        $limitCents = $monthBalance->limit_cents
             ?? $card->monthly_limit_cents;
 
         $transactions = Transaction::query()
             ->where('card_id', $card->id)
             ->where('month', $month)
-            ->orderBy('occurred_at')
+            ->oldest('occurred_at')
             ->orderBy('id')
             ->get();
 

@@ -20,7 +20,7 @@ it('registra deposito e atualiza o saldo da empresa', function (): void {
 
     $company = Company::query()->firstOrFail();
 
-    $service = app(CompanyDepositService::class);
+    $service = resolve(CompanyDepositService::class);
 
     $deposit = $service->create(
         companyId: $company->id,

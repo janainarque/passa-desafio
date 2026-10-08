@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Models\Company;
 use App\Models\Purchase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Date;
 
 uses(RefreshDatabase::class);
 
@@ -22,7 +23,7 @@ function signedDeclinedCaptureRequest(
     string $uri,
     array $payload = [],
 ) {
-    $timestamp = (string) time();
+    $timestamp = (string) Date::now()->getTimestamp();
 
     $body = $method === 'GET'
         ? ''

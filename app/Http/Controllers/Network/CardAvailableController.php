@@ -26,7 +26,7 @@ final class CardAvailableController extends Controller
             ->where('month', $month)
             ->first();
 
-        $limitRemaining = $monthBalance?->limit_remaining_cents
+        $limitRemaining = $monthBalance->limit_remaining_cents
             ?? $card->monthly_limit_cents;
 
         $company = $card->company;

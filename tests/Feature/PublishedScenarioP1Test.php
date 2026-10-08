@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Date;
 
 uses(RefreshDatabase::class);
 
@@ -20,7 +21,7 @@ function signedP1Request(
     string $uri,
     array $payload = [],
 ) {
-    $timestamp = (string) time();
+    $timestamp = (string) Date::now()->getTimestamp();
 
     $body = $method === 'GET'
         ? ''

@@ -38,7 +38,7 @@ final class CardInfolist
                 TextEntry::make('blocked_mccs')
                     ->label('MCCs bloqueados')
                     ->formatStateUsing(
-                        fn ($state): string => empty($state)
+                        fn ($state): string => blank($state)
                             ? 'Nenhum'
                             : implode(', ', $state),
                     ),

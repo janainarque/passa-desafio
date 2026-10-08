@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Models\Capture;
 use App\Models\Card;
 use App\Models\CardMonthBalance;
 use App\Models\Company;
 use App\Models\Purchase;
 use App\Models\Transaction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Date;
 
 uses(RefreshDatabase::class);
 
@@ -22,7 +24,7 @@ beforeEach(function (): void {
 
 function signedNetworkRequest(string $method, string $uri, array $payload)
 {
-    $timestamp = (string) time();
+    $timestamp = (string) Date::now()->getTimestamp();
 
     $body = json_encode(
         $payload,
@@ -628,7 +630,7 @@ it('nao processa a mesma capture duas vezes quando o id da rede se repete', func
         ->toBe(120000);
 
     expect(
-        App\Models\Capture::query()
+        Capture::query()
             ->where('network_id', 'evt_duplicate_capture')
             ->count()
     )->toBe(1);
@@ -713,7 +715,7 @@ it('nao processa novamente capture reemitida com novo id e mesma sequence', func
         ->firstOrFail();
 
     expect(
-        App\Models\Capture::query()
+        Capture::query()
             ->where('purchase_id', $purchase->id)
             ->where('sequence', 1)
             ->count()

@@ -20,21 +20,33 @@ final class Card extends Model
         'blocked_mccs',
     ];
 
+    /**
+     * @return BelongsTo<Company, $this>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return HasMany<CardMonthBalance, $this>
+     */
     public function monthBalances(): HasMany
     {
         return $this->hasMany(CardMonthBalance::class);
     }
 
+    /**
+     * @return HasMany<Purchase, $this>
+     */
     public function purchases(): HasMany
     {
         return $this->hasMany(Purchase::class);

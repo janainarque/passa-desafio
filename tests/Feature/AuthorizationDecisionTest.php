@@ -6,6 +6,7 @@ use App\Models\Card;
 use App\Models\CardMonthBalance;
 use App\Models\Company;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Date;
 
 uses(RefreshDatabase::class);
 
@@ -20,7 +21,7 @@ beforeEach(function (): void {
 
 function sendAuthorization(array $payload)
 {
-    $timestamp = (string) time();
+    $timestamp = (string) Date::now()->getTimestamp();
 
     $body = json_encode(
         $payload,

@@ -15,6 +15,9 @@ final class Cancellation extends Model
         'occurred_at',
     ];
 
+    /**
+     * @return BelongsTo<Purchase, $this>
+     */
     public function purchase(): BelongsTo
     {
         return $this->belongsTo(Purchase::class);

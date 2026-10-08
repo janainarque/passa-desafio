@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Middleware\VerifyNetworkSignature;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Route;
 
 beforeEach(function (): void {
@@ -18,7 +19,7 @@ beforeEach(function (): void {
 });
 
 it('aceita assinatura valida da rede', function (): void {
-    $timestamp = (string) time();
+    $timestamp = (string) Date::now()->getTimestamp();
 
     $body = json_encode([
         'id' => 'msg_123',
@@ -53,7 +54,7 @@ it('aceita assinatura valida da rede', function (): void {
 });
 
 it('rejeita assinatura invalida', function (): void {
-    $timestamp = (string) time();
+    $timestamp = (string) Date::now()->getTimestamp();
     $body = '{"id":"msg_123"}';
     $response = $this
         ->withHeaders([
@@ -75,7 +76,7 @@ it('rejeita assinatura invalida', function (): void {
 });
 
 it('rejeita timestamp fora da janela de cinco minutos', function (): void {
-    $timestamp = (string) (time() - 301);
+    $timestamp = (string) (Date::now()->subSeconds(301)->getTimestamp());
 
     $body = '{"id":"msg_123"}';
 

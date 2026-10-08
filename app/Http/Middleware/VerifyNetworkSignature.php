@@ -6,6 +6,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Date;
 use Symfony\Component\HttpFoundation\Response;
 
 final class VerifyNetworkSignature
@@ -32,7 +33,7 @@ final class VerifyNetworkSignature
             ], 401);
         }
 
-        if (abs(time() - (int) $timestamp) > 300) {
+        if (abs(Date::now()->getTimestamp() - (int) $timestamp) > 300) {
             return response()->json([
                 'message' => 'Unauthorized',
             ], 401);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Transactions\Tables;
 
+use App\Models\Transaction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -100,7 +101,7 @@ final class TransactionsTable
                 SelectFilter::make('month')
                     ->label('Mês')
                     ->options(
-                        fn (): array => \App\Models\Transaction::query()
+                        fn (): array => Transaction::query()
                             ->whereNotNull('month')
                             ->distinct()
                             ->orderByDesc('month')

@@ -15,11 +15,17 @@ final class Company extends Model
         'reserved_cents',
     ];
 
+    /**
+     * @return HasMany<Card, $this>
+     */
     public function cards(): HasMany
     {
         return $this->hasMany(Card::class);
     }
 
+    /**
+     * @return HasMany<CompanyDeposit, $this>
+     */
     public function deposits(): HasMany
     {
         return $this->hasMany(CompanyDeposit::class);

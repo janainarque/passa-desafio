@@ -15,8 +15,31 @@ use Carbon\CarbonImmutable;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * @phpstan-type AuthorizationData array{
+ *     id: string,
+ *     card_token: string,
+ *     amount_cents: int,
+ *     currency: string,
+ *     mcc: string,
+ *     merchant: array{
+ *         name: string,
+ *         city: string,
+ *         country: string
+ *     },
+ *     occurred_at: string
+ * }
+ * @phpstan-type AuthorizationResponse array{
+ *     decision: 'approved'|'declined',
+ *     reason?: string|null
+ * }
+ */
 final class AuthorizationService
 {
+    /**
+     * @param  AuthorizationData  $data
+     * @return AuthorizationResponse
+     */
     public function process(array $data): array
     {
         $existingAuthorization = Authorization::query()
@@ -184,23 +207,23 @@ final class AuthorizationService
 
                 return ['decision' => 'approved'];
             });
-        } catch (QueryException $exception) {
-            if ($exception->getCode() !== '23505') {
-                throw $exception;
-            }
+        } catch (QueryException $queryException) {
+            throw_if($queryException->getCode() !== '23505', $queryException);
 
             $authorization = Authorization::query()
                 ->where('network_id', $data['id'])
                 ->first();
 
-            if ($authorization === null) {
-                throw $exception;
-            }
+            throw_if($authorization === null, $queryException);
 
             return $this->responseFromAuthorization($authorization);
         }
     }
 
+    /**
+     * @param  AuthorizationData  $data
+     * @return AuthorizationResponse
+     */
     private function decline(array $data, string $month, ?Card $card, string $reason): array
     {
         $purchase = Purchase::query()
@@ -367,7 +390,7 @@ final class AuthorizationService
             return;
         }
 
-        $company = $card !== null
+        $company = $card instanceof Card
             ? Company::query()
                 ->whereKey($card->company_id)
                 ->lockForUpdate()
@@ -378,7 +401,7 @@ final class AuthorizationService
 
         $monthBalance = null;
 
-        if ($card !== null) {
+        if ($card instanceof Card) {
             $monthBalance = CardMonthBalance::query()->firstOrCreate(
                 [
                     'card_id' => $card->id,
@@ -397,7 +420,7 @@ final class AuthorizationService
         }
 
         foreach ($captures as $capture) {
-            $cardLimitDelta = $card !== null
+            $cardLimitDelta = $card instanceof Card
                 ? -$capture->amount_cents
                 : 0;
 
@@ -492,6 +515,9 @@ final class AuthorizationService
         ]);
     }
 
+    /**
+     * @return AuthorizationResponse
+     */
     private function responseFromAuthorization(Authorization $authorization): array
     {
         if ($authorization->decision === 'approved') {

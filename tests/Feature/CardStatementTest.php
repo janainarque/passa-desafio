@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Date;
 
 uses(RefreshDatabase::class);
 
@@ -17,7 +18,7 @@ beforeEach(function (): void {
 
 function signedStatementRequest(string $uri)
 {
-    $timestamp = (string) time();
+    $timestamp = (string) Date::now()->getTimestamp();
     $body = '';
 
     $signature = 'sha256='.hash_hmac(
@@ -68,7 +69,7 @@ it('monta o statement com saldo restante apos cada transaction', function (): vo
         'occurred_at' => '2026-10-08T01:00:00Z',
     ];
 
-    $timestamp = (string) time();
+    $timestamp = (string) Date::now()->getTimestamp();
 
     $body = json_encode(
         $authorizationPayload,
@@ -107,7 +108,7 @@ it('monta o statement com saldo restante apos cada transaction', function (): vo
         'final' => false,
     ];
 
-    $timestamp = (string) time();
+    $timestamp = (string) Date::now()->getTimestamp();
 
     $body = json_encode(
         $capturePayload,

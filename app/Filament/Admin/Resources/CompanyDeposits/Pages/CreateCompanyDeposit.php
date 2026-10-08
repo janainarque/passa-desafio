@@ -19,7 +19,7 @@ final class CreateCompanyDeposit extends CreateRecord
 
         abort_if($userId === null, 403);
 
-        return app(CompanyDepositService::class)->create(
+        return resolve(CompanyDepositService::class)->create(
             companyId: (int) $data['company_id'],
             amountCents: (int) $data['amount_cents'],
             createdByUserId: $userId,

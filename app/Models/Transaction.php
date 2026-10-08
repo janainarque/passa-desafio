@@ -22,11 +22,17 @@ final class Transaction extends Model
         'occurred_at',
     ];
 
+    /**
+     * @return BelongsTo<Purchase, $this>
+     */
     public function purchase(): BelongsTo
     {
         return $this->belongsTo(Purchase::class);
     }
 
+    /**
+     * @return BelongsTo<Card, $this>
+     */
     public function card(): BelongsTo
     {
         return $this->belongsTo(Card::class);

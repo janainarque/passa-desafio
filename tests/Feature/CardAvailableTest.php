@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Date;
 
 uses(RefreshDatabase::class);
 
@@ -17,7 +18,7 @@ beforeEach(function (): void {
 
 function signedAvailableRequest(string $uri)
 {
-    $timestamp = (string) time();
+    $timestamp = (string) Date::now()->getTimestamp();
 
     $body = '';
 
@@ -82,7 +83,7 @@ it('limita o disponivel pelo saldo disponivel da empresa', function (): void {
 
 function signedAvailablePostRequest(string $uri, array $payload)
 {
-    $timestamp = (string) time();
+    $timestamp = (string) Date::now()->getTimestamp();
 
     $body = json_encode(
         $payload,

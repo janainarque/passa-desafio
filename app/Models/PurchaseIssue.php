@@ -16,6 +16,9 @@ final class PurchaseIssue extends Model
         'detected_at',
     ];
 
+    /**
+     * @return BelongsTo<Purchase, $this>
+     */
     public function purchase(): BelongsTo
     {
         return $this->belongsTo(Purchase::class);
