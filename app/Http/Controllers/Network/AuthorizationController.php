@@ -5,14 +5,17 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Network;
 
 use App\Http\Controllers\Controller;
+use App\Services\AuthorizationService;
 use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 final class AuthorizationController extends Controller
 {
-    public function store(Request $request): JsonResponse
-    {
+    public function store(
+        Request $request,
+        AuthorizationService $authorizationService,
+    ): JsonResponse {
         $validated = $request->validate([
             'id' => ['required', 'string', 'max:64'],
             'card_token' => ['required', 'string'],
@@ -39,6 +42,8 @@ final class AuthorizationController extends Controller
             ],
         ]);
 
-        return response()->json(['received' => true, 'id' => $validated['id']]);
+        return response()->json(
+            $authorizationService->process($validated)
+        );
     }
 }

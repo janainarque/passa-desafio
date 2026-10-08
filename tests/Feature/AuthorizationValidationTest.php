@@ -2,11 +2,17 @@
 
 declare(strict_types=1);
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class);
+
 beforeEach(function (): void {
     config()->set(
         'services.network.secret',
         'test-network-secret',
     );
+
+    $this->seed();
 });
 
 function signedAuthorizationRequest(array $payload): array
@@ -60,12 +66,7 @@ it('aceita payload valido de authorization', function (): void {
         $request['body']
     );
 
-    $response
-        ->assertOk()
-        ->assertJson([
-            'received' => true,
-            'id' => 'aut_001',
-        ]);
+    $response->assertOk()->assertJson(['decision' => 'approved']);
 });
 
 it('rejeita amount cents enviado como string', function (): void {
