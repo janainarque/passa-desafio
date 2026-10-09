@@ -195,4 +195,4 @@ Durante a implementação, encontrei dois casos de borda que exigiram ajuste: ca
 
 Também ajustei cancellation sem reserva: o fato continua sendo armazenado, mas não é criada `Transaction`, já que nenhuma grandeza financeira mudou.
 
-A IA sugeriu inicialmente algumas abstrações e decisões mais amplas, como ULID e maior separação de componentes. Mantive apenas o que fazia sentido para o domínio e descartei o que adicionava complexidade sem melhorar as garantias exigidas pelo desafio.
+Também considerei abstrações mais amplas, como ULID e uma separação maior de componentes. Mantive apenas o que trazia ganho concreto para o domínio e descartei o que aumentava a complexidade sem melhorar as garantias exigidas pelo desafio.

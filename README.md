@@ -74,7 +74,7 @@ Senha: password
 
 Somente Marina possui acesso ao painel.
 
-O painel permite consultar cartões, compras, transactions, autorizações, issues e eventos pendentes.
+O painel permite consultar cartões, compras, transações, autorizações, alertas financeiros e eventos aguardando autorização.
 
 A única operação financeira de escrita disponível no painel é o registro de depósito para a empresa.
 
@@ -109,7 +109,7 @@ Senha para todos:
 password
 ```
 
-A tela `/my-card` exibe o cartão do usuário autenticado, disponível atual, limite mensal restante, statement do mês e histórico das compras.
+A tela `/my-card` exibe o cartão do usuário autenticado, disponível atual, limite mensal restante, extrato do mês e histórico das compras.
 
 Os dados dinâmicos são atualizados através de polling do Livewire a cada 5 segundos, sem recarregar a página inteira.
 
@@ -224,7 +224,8 @@ CardMonthBalance.limit_remaining_cents
 Purchase.reserved_amount_cents
 ```
 
-As `transactions` preservam cada movimentação financeira e são utilizadas para construção dos statements.
+As transações preservam cada movimentação financeira e são utilizadas
+para construir os extratos.
 
 Os valores monetários são sempre armazenados em centavos inteiros.
 
