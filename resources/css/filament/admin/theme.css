@@ -2,3 +2,121 @@
 
 @source '../../../../app/Filament/Admin/**/*';
 @source '../../../../resources/views/filament/admin/**/*';
+
+/*
+|--------------------------------------------------------------------------
+| Passa - Admin Theme
+|--------------------------------------------------------------------------
+|
+| O painel administrativo mantém a estrutura nativa do Filament.
+| As alterações abaixo mudam somente a identidade visual.
+|
+*/
+
+.fi-simple-layout {
+    background: radial-gradient(circle at 50% 35%, rgba(16, 185, 129, 0.06), transparent 28rem), #090d16;
+}
+
+.fi-simple-main {
+    border: 1px solid rgba(51, 65, 85, 0.7);
+    border-radius: 1.5rem;
+    background: rgba(15, 23, 42, 0.72);
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.35),
+        0 0 0 1px rgba(255, 255, 255, 0.01);
+    backdrop-filter: blur(16px);
+}
+
+.fi-logo {
+    color: #f8fafc;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+}
+
+.fi-simple-header-heading {
+    color: #f8fafc;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+}
+
+.fi-simple-header-subheading {
+    color: #64748b;
+}
+
+.fi-fo-field-wrp-label {
+    color: #94a3b8;
+}
+
+.fi-input-wrp {
+    border-color: rgba(71, 85, 105, 0.75);
+    border-radius: 0.75rem;
+    background: rgba(2, 6, 23, 0.5);
+    box-shadow: none;
+    transition:
+        border-color 150ms ease,
+        box-shadow 150ms ease;
+}
+
+.fi-input-wrp:focus-within {
+    border-color: rgba(16, 185, 129, 0.85);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.08);
+}
+
+.fi-input {
+    color: #f8fafc;
+}
+
+.fi-input::placeholder {
+    color: #475569;
+}
+
+.fi-checkbox-input {
+    border-color: #475569;
+}
+
+.fi-btn.fi-color-primary {
+    border-radius: 0.75rem;
+    background: linear-gradient(90deg, #10b981, #22d3ee);
+    color: #020617;
+    font-weight: 700;
+    box-shadow: none;
+    transition:
+        filter 150ms ease,
+        transform 150ms ease;
+}
+
+.fi-btn.fi-color-primary:hover {
+    filter: brightness(1.08);
+}
+
+.fi-fo-field-wrp-error-message {
+    color: #fb7185;
+}
+
+.fi-link {
+    color: #34d399;
+}
+
+.fi-logo::after {
+    content: 'CORPORATE';
+    display: inline-block;
+    margin-left: 0.5rem;
+    padding: 0.15rem 0.45rem;
+    border: 1px solid rgba(71, 85, 105, 0.8);
+    border-radius: 9999px;
+    background: rgba(30, 41, 59, 0.8);
+    color: #94a3b8;
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    vertical-align: middle;
+}
+
+/* Marca do painel */
+.fi-logo {
+    color: #0f172a;
+}
+
+.dark .fi-logo {
+    color: #ffffff;
+}
