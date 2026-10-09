@@ -20,7 +20,13 @@ final class AuthorizationResource extends Resource
 {
     protected static ?string $model = Authorization::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCheckBadge;
+
+    protected static ?string $navigationLabel = 'Autorizações';
+
+    protected static ?string $modelLabel = 'Autorização';
+
+    protected static ?string $pluralModelLabel = 'Autorizações';
 
     protected static ?string $recordTitleAttribute = 'network_id';
 

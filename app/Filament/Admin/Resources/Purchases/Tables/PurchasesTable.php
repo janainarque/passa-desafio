@@ -7,6 +7,7 @@ namespace App\Filament\Admin\Resources\Purchases\Tables;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 final class PurchasesTable
@@ -36,26 +37,70 @@ final class PurchasesTable
 
                 TextColumn::make('status')
                     ->label('Status')
-                    ->badge(),
+                    ->badge()
+                    ->formatStateUsing(
+                        fn (string $state): string => match ($state) {
+                            'pending_authorization' => 'Aguardando autorização',
+                            'authorized' => 'Autorizada',
+                            'partially_captured' => 'Parcialmente capturada',
+                            'settled' => 'Liquidada',
+                            'canceled' => 'Cancelada',
+                            'declined' => 'Recusada',
+                            default => $state,
+                        },
+                    )
+                    ->color(
+                        fn (string $state): string => match ($state) {
+                            'authorized' => 'success',
+                            'partially_captured' => 'warning',
+                            'settled' => 'success',
+                            'canceled' => 'gray',
+                            'declined' => 'danger',
+                            'pending_authorization' => 'warning',
+                            default => 'gray',
+                        },
+                    ),
 
                 TextColumn::make('authorized_amount_cents')
                     ->label('Autorizado')
-                    ->numeric()
-                    ->placeholder('-')
+                    ->formatStateUsing(
+                        fn ($state): string => $state === null
+                            ? '-'
+                            : 'R$ '.number_format(
+                                ((int) $state) / 100,
+                                2,
+                                ',',
+                                '.',
+                            ),
+                    )
                     ->sortable(),
 
                 TextColumn::make('captured_amount_cents')
                     ->label('Capturado')
-                    ->numeric()
+                    ->formatStateUsing(
+                        fn ($state): string => 'R$ '.number_format(
+                            ((int) $state) / 100,
+                            2,
+                            ',',
+                            '.',
+                        ),
+                    )
                     ->sortable(),
 
                 TextColumn::make('reserved_amount_cents')
                     ->label('Reservado')
-                    ->numeric()
+                    ->formatStateUsing(
+                        fn ($state): string => 'R$ '.number_format(
+                            ((int) $state) / 100,
+                            2,
+                            ',',
+                            '.',
+                        ),
+                    )
                     ->sortable(),
 
                 IconColumn::make('has_final_capture')
-                    ->label('Capture final')
+                    ->label('Captura final')
                     ->boolean(),
 
                 IconColumn::make('has_cancellation')
@@ -63,18 +108,31 @@ final class PurchasesTable
                     ->boolean(),
 
                 TextColumn::make('issues_count')
-                    ->label('Problemas')
+                    ->label('Alertas')
                     ->counts('issues'),
 
                 TextColumn::make('created_at')
                     ->label('Criado em')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->dateTime('d/m/Y H:i:s')
+                    ->sortable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->label('Status')
+                    ->options([
+                        'pending_authorization' => 'Aguardando autorização',
+                        'authorized' => 'Autorizada',
+                        'partially_captured' => 'Parcialmente capturada',
+                        'settled' => 'Liquidada',
+                        'canceled' => 'Cancelada',
+                        'declined' => 'Recusada',
+                    ]),
             ])
+            ->emptyStateHeading('Nenhuma compra encontrada')
+            ->emptyStateDescription(
+                'As compras processadas pela rede aparecerão aqui.',
+            )
+            ->emptyStateIcon('heroicon-o-shopping-bag')
             ->recordActions([
                 ViewAction::make(),
             ])

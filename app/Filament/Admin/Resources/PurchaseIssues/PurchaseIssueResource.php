@@ -20,7 +20,13 @@ final class PurchaseIssueResource extends Resource
 {
     protected static ?string $model = PurchaseIssue::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedExclamationTriangle;
+
+    protected static ?string $navigationLabel = 'Alertas financeiros';
+
+    protected static ?string $modelLabel = 'Alerta financeiro';
+
+    protected static ?string $pluralModelLabel = 'Alertas financeiros';
 
     protected static ?string $recordTitleAttribute = 'code';
 

@@ -20,7 +20,13 @@ final class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowsRightLeft;
+
+    protected static ?string $navigationLabel = 'Transações';
+
+    protected static ?string $modelLabel = 'Transação';
+
+    protected static ?string $pluralModelLabel = 'Transações';
 
     protected static ?string $recordTitleAttribute = 'reference';
 

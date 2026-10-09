@@ -4,24 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Meu cartão</title>
+    <title>Meu cartão · Passa</title>
 
     @vite (['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
 
-<body class="bg-gray-100">
-    <main class="mx-auto max-w-5xl p-6">
-        <div class="mb-6 flex items-center justify-between">
-            <h1 class="text-2xl font-bold">Meu cartão</h1>
-
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-
-                <button type="submit" class="rounded border px-4 py-2">Sair</button>
-            </form>
-        </div>
-
+<body class="min-h-screen bg-[#090d16] text-slate-100 antialiased">
+    <main class="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <livewire:my-card />
     </main>
 

@@ -21,7 +21,13 @@ final class CompanyDepositResource extends Resource
 {
     protected static ?string $model = CompanyDeposit::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
+
+    protected static ?string $navigationLabel = 'Depósitos da empresa';
+
+    protected static ?string $modelLabel = 'Depósito';
+
+    protected static ?string $pluralModelLabel = 'Depósitos da empresa';
 
     protected static ?string $recordTitleAttribute = 'id';
 

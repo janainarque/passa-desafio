@@ -19,23 +19,28 @@ final class PendingEventsTable
                     ->searchable(),
 
                 TextColumn::make('captures_count')
-                    ->label('Captures pendentes')
+                    ->label('Capturas pendentes')
                     ->counts('captures'),
 
                 IconColumn::make('has_cancellation')
-                    ->label('Cancellation recebida')
+                    ->label('Cancelamento recebido')
                     ->boolean(),
 
                 TextColumn::make('created_at')
                     ->label('Recebido em')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i:s')
                     ->sortable(),
 
                 TextColumn::make('updated_at')
                     ->label('Última atualização')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i:s')
                     ->sortable(),
             ])
+            ->emptyStateHeading('Nenhum evento aguardando autorização')
+            ->emptyStateDescription(
+                'Eventos recebidos antes da respectiva autorização aparecerão aqui.',
+            )
+            ->emptyStateIcon('heroicon-o-clock')
             ->recordActions([])
             ->toolbarActions([]);
     }

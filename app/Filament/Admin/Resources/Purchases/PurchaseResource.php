@@ -20,7 +20,13 @@ final class PurchaseResource extends Resource
 {
     protected static ?string $model = Purchase::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingBag;
+
+    protected static ?string $navigationLabel = 'Compras';
+
+    protected static ?string $modelLabel = 'Compra';
+
+    protected static ?string $pluralModelLabel = 'Compras';
 
     protected static ?string $recordTitleAttribute = 'authorization_network_id';
 

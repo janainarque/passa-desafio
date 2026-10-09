@@ -17,12 +17,21 @@ final class PurchaseIssuesTable
             ->columns([
                 TextColumn::make('detected_at')
                     ->label('Detectado em')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i:s')
                     ->sortable(),
 
                 TextColumn::make('code')
                     ->label('Problema')
                     ->badge()
+                    ->formatStateUsing(
+                        fn (string $state): string => match ($state) {
+                            'overcapture_exceeded' => 'Captura acima do esperado',
+                            'capture_after_cancellation' => 'Captura após cancelamento',
+                            'capture_for_declined_authorization' => 'Captura para autorização recusada',
+                            default => $state,
+                        },
+                    )
+                    ->color('warning')
                     ->searchable(),
 
                 TextColumn::make('purchase.authorization_network_id')
@@ -46,9 +55,8 @@ final class PurchaseIssuesTable
 
                 TextColumn::make('created_at')
                     ->label('Registrado em')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->dateTime('d/m/Y H:i:s')
+                    ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('code')
@@ -56,9 +64,14 @@ final class PurchaseIssuesTable
                     ->options([
                         'overcapture_exceeded' => 'Captura acima do esperado',
                         'capture_after_cancellation' => 'Captura após cancelamento',
-                        'capture_for_declined_authorization' => 'Captura de autorização recusada',
+                        'capture_for_declined_authorization' => 'Captura para autorização recusada',
                     ]),
             ])
+            ->emptyStateHeading('Nenhum alerta financeiro encontrado')
+            ->emptyStateDescription(
+                'Situações financeiras que exigirem atenção aparecerão aqui.',
+            )
+            ->emptyStateIcon('heroicon-o-exclamation-triangle')
             ->recordActions([
                 ViewAction::make(),
             ])

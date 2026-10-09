@@ -22,6 +22,12 @@ final class CardResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static ?string $navigationLabel = 'Cartões';
+
+    protected static ?string $modelLabel = 'Cartão';
+
+    protected static ?string $pluralModelLabel = 'Cartões';
+
     protected static ?string $recordTitleAttribute = 'card_token';
 
     public static function form(Schema $schema): Schema

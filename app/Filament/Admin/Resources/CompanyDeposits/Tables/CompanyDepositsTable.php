@@ -15,8 +15,8 @@ final class CompanyDepositsTable
         return $table
             ->columns([
                 TextColumn::make('occurred_at')
-                    ->label('Data')
-                    ->dateTime()
+                    ->label('Data do depósito')
+                    ->dateTime('d/m/Y H:i:s')
                     ->sortable(),
 
                 TextColumn::make('company.name')
@@ -35,16 +35,22 @@ final class CompanyDepositsTable
                     )
                     ->sortable(),
 
-                TextColumn::make('created_by_user_id')
-                    ->label('Criado por'),
+                TextColumn::make('createdBy.name')
+                    ->label('Registrado por')
+                    ->placeholder('-')
+                    ->searchable(),
 
                 TextColumn::make('created_at')
                     ->label('Registrado em')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->dateTime('d/m/Y H:i:s')
+                    ->sortable(),
             ])
             ->filters([])
+            ->emptyStateHeading('Nenhum depósito registrado')
+            ->emptyStateDescription(
+                'Os depósitos realizados para a empresa aparecerão aqui.',
+            )
+            ->emptyStateIcon('heroicon-o-banknotes')
             ->recordActions([
                 ViewAction::make(),
             ])

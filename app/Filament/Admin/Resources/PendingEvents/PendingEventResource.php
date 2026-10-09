@@ -17,17 +17,15 @@ final class PendingEventResource extends Resource
 {
     protected static ?string $model = Purchase::class;
 
-    protected static string|BackedEnum|null $navigationIcon
-        = Heroicon::OutlinedClock;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClock;
 
-    protected static ?string $navigationLabel = 'Eventos pendentes';
+    protected static ?string $navigationLabel = 'Aguardando autorização';
 
-    protected static ?string $modelLabel = 'Evento pendente';
+    protected static ?string $modelLabel = 'Evento aguardando autorização';
 
-    protected static ?string $pluralModelLabel = 'Eventos pendentes';
+    protected static ?string $pluralModelLabel = 'Aguardando autorização';
 
-    protected static ?string $recordTitleAttribute
-        = 'authorization_network_id';
+    protected static ?string $recordTitleAttribute = 'authorization_network_id';
 
     public static function table(Table $table): Table
     {

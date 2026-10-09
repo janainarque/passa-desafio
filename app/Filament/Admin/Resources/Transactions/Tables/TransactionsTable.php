@@ -24,7 +24,24 @@ final class TransactionsTable
                 TextColumn::make('type')
                     ->label('Tipo')
                     ->badge()
-                    ->searchable(),
+                    ->formatStateUsing(
+                        fn (string $state): string => match ($state) {
+                            'company_deposit' => 'Depósito da empresa',
+                            'authorization_hold' => 'Reserva da autorização',
+                            'capture_settlement' => 'Liquidação da captura',
+                            'cancellation_release' => 'Liberação por cancelamento',
+                            default => $state,
+                        },
+                    )
+                    ->color(
+                        fn (string $state): string => match ($state) {
+                            'company_deposit' => 'success',
+                            'authorization_hold' => 'warning',
+                            'capture_settlement' => 'primary',
+                            'cancellation_release' => 'gray',
+                            default => 'gray',
+                        },
+                    ),
 
                 TextColumn::make('reference')
                     ->label('Referência')
@@ -85,8 +102,7 @@ final class TransactionsTable
                 TextColumn::make('created_at')
                     ->label('Registrado em')
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('type')

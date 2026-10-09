@@ -24,7 +24,21 @@ final class CardsTable
 
                 TextColumn::make('status')
                     ->label('Status')
-                    ->badge(),
+                    ->badge()
+                    ->formatStateUsing(
+                        fn (string $state): string => match ($state) {
+                            'active' => 'Ativo',
+                            'blocked' => 'Bloqueado',
+                            default => $state,
+                        },
+                    )
+                    ->color(
+                        fn (string $state): string => match ($state) {
+                            'active' => 'success',
+                            'blocked' => 'danger',
+                            default => 'gray',
+                        },
+                    ),
 
                 TextColumn::make('monthly_limit_cents')
                     ->label('Limite mensal')
@@ -57,8 +71,7 @@ final class CardsTable
                 TextColumn::make('created_at')
                     ->label('Criado em')
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
             ->filters([
                 //

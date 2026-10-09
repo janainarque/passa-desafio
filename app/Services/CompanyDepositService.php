@@ -45,7 +45,7 @@ final class CompanyDepositService
                 'purchase_id' => null,
                 'card_id' => null,
                 'month' => null,
-                'reference' => 'deposit_'.$deposit->id,
+                'reference' => 'deposit:'.$deposit->id,
                 'type' => 'company_deposit',
                 'card_limit_delta_cents' => 0,
                 'company_balance_delta_cents' => $amountCents,

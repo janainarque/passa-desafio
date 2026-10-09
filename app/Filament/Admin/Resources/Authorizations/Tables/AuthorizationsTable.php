@@ -17,7 +17,7 @@ final class AuthorizationsTable
             ->columns([
                 TextColumn::make('occurred_at')
                     ->label('Data')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i:s')
                     ->sortable(),
 
                 TextColumn::make('network_id')
@@ -53,18 +53,43 @@ final class AuthorizationsTable
                 TextColumn::make('decision')
                     ->label('Decisão')
                     ->badge()
+                    ->formatStateUsing(
+                        fn (string $state): string => match ($state) {
+                            'approved' => 'Aprovada',
+                            'declined' => 'Recusada',
+                            default => $state,
+                        },
+                    )
+                    ->color(
+                        fn (string $state): string => match ($state) {
+                            'approved' => 'success',
+                            'declined' => 'danger',
+                            default => 'gray',
+                        },
+                    )
                     ->searchable(),
 
                 TextColumn::make('reason')
                     ->label('Motivo')
                     ->placeholder('-')
+                    ->formatStateUsing(
+                        fn (?string $state): string => match ($state) {
+                            'amount_over_purchase_limit' => 'Acima do limite por compra',
+                            'card_blocked' => 'Cartão bloqueado',
+                            'mcc_blocked' => 'Categoria de uso bloqueada',
+                            'insufficient_card_limit' => 'Limite mensal insuficiente',
+                            'insufficient_company_balance' => 'Saldo da empresa insuficiente',
+                            'card_not_found' => 'Cartão não encontrado',
+                            null => '-',
+                            default => $state,
+                        },
+                    )
                     ->searchable(),
 
                 TextColumn::make('created_at')
                     ->label('Registrado em')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->dateTime('d/m/Y H:i:s')
+                    ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('decision')
@@ -74,6 +99,11 @@ final class AuthorizationsTable
                         'declined' => 'Recusada',
                     ]),
             ])
+            ->emptyStateHeading('Nenhuma autorização recebida')
+            ->emptyStateDescription(
+                'As autorizações enviadas pela rede aparecerão aqui.',
+            )
+            ->emptyStateIcon('heroicon-o-check-badge')
             ->recordActions([
                 ViewAction::make(),
             ])
