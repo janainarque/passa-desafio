@@ -9,6 +9,7 @@ use App\Models\CardMonthBalance;
 use App\Models\Company;
 use App\Models\Purchase;
 use App\Models\Transaction;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -38,6 +39,21 @@ final class CancellationService
             return ['received' => true];
         }
 
+        try {
+            return $this->processTransaction($data);
+        } catch (QueryException $queryException) {
+            throw_if($queryException->getCode() !== '23505', $queryException);
+
+            return $this->processTransaction($data);
+        }
+    }
+
+    /**
+     * @param  CancellationData  $data
+     * @return EventResponse
+     */
+    private function processTransaction(array $data): array
+    {
         return DB::transaction(function () use ($data): array {
             $purchase = Purchase::query()
                 ->where('authorization_network_id', $data['authorization_id'])
