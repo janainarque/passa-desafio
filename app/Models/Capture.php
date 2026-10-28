@@ -7,6 +7,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property \Illuminate\Support\Carbon $occurred_at
+ */
 final class Capture extends Model
 {
     protected $fillable = [

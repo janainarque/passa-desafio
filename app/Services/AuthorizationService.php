@@ -440,37 +440,29 @@ final class AuthorizationService
             ->lockForUpdate()
             ->firstOrFail();
 
-        $monthBalance = null;
+        $monthBalance = CardMonthBalance::query()->firstOrCreate(
+            [
+                'card_id' => $card->id,
+                'month' => $month,
+            ],
+            [
+                'limit_cents' => $card->monthly_limit_cents,
+                'limit_remaining_cents' => $card->monthly_limit_cents,
+            ],
+        );
 
-        if ($card instanceof Card) {
-            $monthBalance = CardMonthBalance::query()->firstOrCreate(
-                [
-                    'card_id' => $card->id,
-                    'month' => $month,
-                ],
-                [
-                    'limit_cents' => $card->monthly_limit_cents,
-                    'limit_remaining_cents' => $card->monthly_limit_cents,
-                ],
-            );
-
-            $monthBalance = CardMonthBalance::query()
-                ->whereKey($monthBalance->id)
-                ->lockForUpdate()
-                ->firstOrFail();
-        }
+        $monthBalance = CardMonthBalance::query()
+            ->whereKey($monthBalance->id)
+            ->lockForUpdate()
+            ->firstOrFail();
 
         foreach ($captures as $capture) {
-            $cardLimitDelta = $card instanceof Card
-                ? -$capture->amount_cents
-                : 0;
+            $cardLimitDelta = -$capture->amount_cents;
 
-            if ($monthBalance !== null) {
-                $monthBalance->increment(
-                    'limit_remaining_cents',
-                    $cardLimitDelta,
-                );
-            }
+            $monthBalance->increment(
+                'limit_remaining_cents',
+                $cardLimitDelta,
+            );
 
             $company->decrement(
                 'balance_cents',
@@ -491,7 +483,7 @@ final class AuthorizationService
             Transaction::query()->create([
                 'company_id' => $company->id,
                 'purchase_id' => $purchase->id,
-                'card_id' => $card?->id,
+                'card_id' => $card->id,
                 'month' => $month,
                 'reference' => $capture->network_id,
                 'type' => 'capture_settlement',
