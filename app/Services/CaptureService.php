@@ -10,6 +10,7 @@ use App\Models\Company;
 use App\Models\Purchase;
 use App\Models\PurchaseIssue;
 use App\Models\Transaction;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
@@ -41,6 +42,8 @@ final class CaptureService
             ->first();
 
         if ($existingCapture !== null) {
+            $this->assertSameCapture($existingCapture, $data);
+
             return ['received' => true];
         }
 
@@ -102,6 +105,8 @@ final class CaptureService
                 ->first();
 
             if ($existingSequence !== null) {
+                $this->assertSameCapture($existingSequence, $data);
+
                 return ['received' => true];
             }
 
@@ -278,5 +283,25 @@ final class CaptureService
 
             return ['received' => true];
         });
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function assertSameCapture(Capture $capture, array $data): void
+    {
+        $sameData
+            = $capture->purchase->authorization_network_id === $data['authorization_id']
+            && $capture->sequence === $data['sequence']
+            && $capture->amount_cents === $data['amount_cents']
+            && $capture->currency === $data['currency']
+            && $capture->final === $data['final']
+            && $capture->occurred_at->equalTo(
+                CarbonImmutable::parse($data['occurred_at'])
+            );
+
+        if (! $sameData) {
+            abort(409, 'Capture already exists with different data.');
+        }
     }
 }

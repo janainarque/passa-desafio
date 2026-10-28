@@ -47,6 +47,10 @@ final class AuthorizationService
             ->first();
 
         if ($existingAuthorization !== null) {
+            if ($existingAuthorization->amount_cents !== $data['amount_cents']) {
+                abort(409, 'Authorization ID already exists with different data.');
+            }
+
             return $this->responseFromAuthorization($existingAuthorization);
         }
 
@@ -215,6 +219,10 @@ final class AuthorizationService
                 ->first();
 
             throw_if($authorization === null, $queryException);
+
+            if ($authorization->amount_cents !== $data['amount_cents']) {
+                abort(409, 'Authorization ID already exists with different data.');
+            }
 
             return $this->responseFromAuthorization($authorization);
         }
