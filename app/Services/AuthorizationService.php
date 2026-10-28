@@ -47,6 +47,10 @@ final class AuthorizationService
             ->first();
 
         if ($existingAuthorization !== null) {
+            if ($existingAuthorization->amount_cents !== $data['amount_cents']) {
+                abort(409, 'Authorization ID already exists with different data.');
+            }
+
             return $this->responseFromAuthorization($existingAuthorization);
         }
 
@@ -216,6 +220,10 @@ final class AuthorizationService
 
             throw_if($authorization === null, $queryException);
 
+            if ($authorization->amount_cents !== $data['amount_cents']) {
+                abort(409, 'Authorization ID already exists with different data.');
+            }
+
             return $this->responseFromAuthorization($authorization);
         }
     }
@@ -289,6 +297,8 @@ final class AuthorizationService
             ->orderBy('sequence')
             ->get();
 
+        $cancellation = $purchase->cancellation;
+
         foreach ($captures as $capture) {
             $reservedBefore = $purchase->reserved_amount_cents;
             $capturedBefore = $purchase->captured_amount_cents;
@@ -316,6 +326,22 @@ final class AuthorizationService
             $cardLimitDelta = $previousConsumed - $newConsumed;
             $companyReservedDelta = $reservedAfter - $reservedBefore;
 
+            if (
+                $cancellation !== null
+                && $capture->occurred_at->greaterThan($cancellation->occurred_at)
+            ) {
+                PurchaseIssue::query()->firstOrCreate(
+                    [
+                        'purchase_id' => $purchase->id,
+                        'code' => 'capture_after_cancellation',
+                    ],
+                    [
+                        'related_network_id' => $capture->network_id,
+                        'detected_at' => now(),
+                    ],
+                );
+            }
+
             if ($overExpected) {
                 PurchaseIssue::query()->firstOrCreate(
                     [
@@ -329,13 +355,15 @@ final class AuthorizationService
                 );
             }
 
+            $hasFinalCapture = $purchase->has_final_capture || $capture->final;
+
             $purchase->update([
                 'captured_amount_cents' => $capturedAfter,
                 'reserved_amount_cents' => $reservedAfter,
-                'has_final_capture' => $purchase->has_final_capture || $capture->final,
+                'has_final_capture' => $hasFinalCapture,
                 'status' => $purchase->has_cancellation
                     ? 'canceled'
-                    : ($capture->final ? 'settled' : 'partially_captured'),
+                    : ($hasFinalCapture ? 'settled' : 'partially_captured'),
             ]);
 
             if ($cardLimitDelta !== 0) {
@@ -390,14 +418,27 @@ final class AuthorizationService
             return;
         }
 
-        $company = $card instanceof Card
-            ? Company::query()
-                ->whereKey($card->company_id)
-                ->lockForUpdate()
-                ->firstOrFail()
-            : Company::query()
-                ->lockForUpdate()
-                ->firstOrFail();
+        if ($card === null) {
+            foreach ($captures as $capture) {
+                PurchaseIssue::query()->firstOrCreate(
+                    [
+                        'purchase_id' => $purchase->id,
+                        'code' => 'capture_for_declined_authorization',
+                    ],
+                    [
+                        'related_network_id' => $capture->network_id,
+                        'detected_at' => now(),
+                    ],
+                );
+            }
+
+            return;
+        }
+
+        $company = Company::query()
+            ->whereKey($card->company_id)
+            ->lockForUpdate()
+            ->firstOrFail();
 
         $monthBalance = null;
 
