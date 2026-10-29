@@ -2,10 +2,18 @@
 
 declare(strict_types=1);
 
+use App\Models\Authorization;
+use App\Models\Capture;
 use App\Models\Card;
 use App\Models\Company;
+use App\Models\Purchase;
+use App\Models\Transaction;
 use App\Models\User;
+use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Sleep;
+use Symfony\Component\Process\Process;
 
 require __DIR__.'/guard.php';
 require __DIR__.'/cleanup.php';
@@ -91,7 +99,7 @@ try {
     // O middleware espera o prefixo "sha256=".
     $signature = 'sha256='.mb_substr($signature, mb_strlen('sha256.'));
 
-    $request = Illuminate\Http\Request::create(
+    $request = Request::create(
         '/api/network/authorizations',
         'POST',
         [],
@@ -106,7 +114,7 @@ try {
         $body,
     );
 
-    $kernel = app(Illuminate\Contracts\Http\Kernel::class);
+    $kernel = resolve(Kernel::class);
 
     $response = $kernel->handle($request);
     $kernel->terminate($request, $response);
@@ -121,7 +129,7 @@ try {
         );
     }
 
-    $purchase = App\Models\Purchase::query()
+    $purchase = Purchase::query()
         ->where('authorization_network_id', $authorizationId)
         ->firstOrFail();
 
@@ -162,8 +170,8 @@ try {
         $encodedPayload,
     ];
 
-    $processA = new Symfony\Component\Process\Process($command);
-    $processB = new Symfony\Component\Process\Process($command);
+    $processA = new Process($command);
+    $processB = new Process($command);
 
     $processA->setTimeout(30);
     $processB->setTimeout(30);
@@ -172,7 +180,7 @@ try {
     echo 'Iniciando duas capturas concorrentes...'.PHP_EOL;
 
     // Inicia o processo que bloqueia a compra no PostgreSQL.
-    $lockProcess = new Symfony\Component\Process\Process([
+    $lockProcess = new Process([
         PHP_BINARY,
         __DIR__.'/lock-worker.php',
         $authorizationId,
@@ -197,7 +205,7 @@ try {
                 break;
             }
 
-            usleep(50000);
+            Sleep::usleep(50000);
         }
 
         if (! $lockAcquired) {
@@ -292,11 +300,11 @@ try {
     }
 
     // Conferir o estado financeiro depois das duas requisicoes.
-    $captureCount = App\Models\Capture::query()
+    $captureCount = Capture::query()
         ->where('purchase_id', $purchase->id)
         ->count();
 
-    $transactionCount = App\Models\Transaction::query()
+    $transactionCount = Transaction::query()
         ->where('purchase_id', $purchase->id)
         ->where('type', 'capture_settlement')
         ->count();
@@ -357,10 +365,10 @@ try {
     echo 'Verificacao concluida: nenhum registro do cenario permaneceu.'.PHP_EOL;
 
     if (
-        App\Models\Purchase::query()
+        Purchase::query()
             ->where('authorization_network_id', "audit_auth_{$suffix}")
             ->exists()
-        || App\Models\Authorization::query()
+        || Authorization::query()
             ->where('network_id', "audit_auth_{$suffix}")
             ->exists()
     ) {

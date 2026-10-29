@@ -2,10 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Models\Authorization;
 use App\Models\Card;
 use App\Models\Company;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Sleep;
+use Symfony\Component\Process\Process;
 
 require __DIR__.'/guard.php';
 
@@ -104,6 +108,7 @@ function cleanupAuthorizationConcurrency(
         User::query()->whereIn('id', $userIds)->delete();
     });
 }
+
 $suffix = bin2hex(random_bytes(6));
 $companyId = null;
 $userIds = [];
@@ -175,7 +180,7 @@ try {
             json_encode($payload, JSON_THROW_ON_ERROR),
         );
 
-        $process = new Symfony\Component\Process\Process([
+        $process = new Process([
             PHP_BINARY,
             __DIR__.'/authorization-worker.php',
             $encodedPayload,
@@ -187,7 +192,7 @@ try {
 
     echo 'Duas autorizacoes preparadas para execucao concorrente.'.PHP_EOL;
 
-    $lockProcess = new Symfony\Component\Process\Process([
+    $lockProcess = new Process([
         PHP_BINARY,
         __DIR__.'/company-lock-worker.php',
         $suffix,
@@ -214,7 +219,7 @@ try {
                 break;
             }
 
-            usleep(50000);
+            Sleep::usleep(50000);
         }
 
         if ($lockPid === null) {
@@ -254,7 +259,7 @@ try {
                 break;
             }
 
-            usleep(50000);
+            Sleep::usleep(50000);
         }
 
         if ($waiting < 2) {
@@ -279,6 +284,7 @@ try {
                     .($process->isRunning() ? 'sim' : 'nao')
                     .PHP_EOL;
             }
+
             throw new RuntimeException(
                 "Concorrencia nao comprovada: {$waiting} conexoes aguardando."
                 .PHP_EOL
@@ -366,7 +372,7 @@ try {
         );
     }
 
-    $authorizations = App\Models\Authorization::query()
+    $authorizations = Authorization::query()
         ->whereIn('card_id', $cardIds)
         ->get();
 
@@ -379,12 +385,12 @@ try {
         ->where('reason', 'insufficient_funds')
         ->count();
 
-    $holdCount = App\Models\Transaction::query()
+    $holdCount = Transaction::query()
         ->where('company_id', $companyId)
         ->where('type', 'authorization_hold')
         ->count();
 
-    $holdAmount = (int) App\Models\Transaction::query()
+    $holdAmount = (int) Transaction::query()
         ->where('company_id', $companyId)
         ->where('type', 'authorization_hold')
         ->sum('company_reserved_delta_cents');

@@ -6,9 +6,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
- * @property \Illuminate\Support\Carbon $occurred_at
+ * @property Carbon $occurred_at
  */
 final class Capture extends Model
 {

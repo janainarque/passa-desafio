@@ -12,6 +12,8 @@ use RectorLaravel\Rector\Class_\ReplaceExpectsMethodsInTestsRector;
 use RectorLaravel\Rector\ClassMethod\AddGenericReturnTypeToRelationsRector;
 use RectorLaravel\Rector\Coalesce\ApplyDefaultInsteadOfNullCoalesceRector;
 use RectorLaravel\Rector\Empty_\EmptyToBlankAndFilledFuncRector;
+use RectorLaravel\Rector\If_\AbortIfRector;
+use RectorLaravel\Rector\If_\ThrowIfRector;
 use RectorLaravel\Rector\MethodCall\AssertStatusToAssertMethodRector;
 use RectorLaravel\Rector\MethodCall\RefactorBlueprintGeometryColumnsRector;
 use RectorLaravel\Rector\PropertyFetch\ReplaceFakerInstanceWithHelperRector;
@@ -72,4 +74,6 @@ return RectorConfig::configure()
     ->withSkip([
         PostIncDecToPreIncDecRector::class,
         AddArrowFunctionReturnTypeRector::class,
+        ThrowIfRector::class,
+        AbortIfRector::class,
     ]);

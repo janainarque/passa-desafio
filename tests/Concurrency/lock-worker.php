@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\Purchase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Sleep;
 
 require __DIR__.'/guard.php';
 
@@ -50,7 +51,7 @@ try {
     flush();
 
     // Segura o bloqueio por no maximo 5 segundos.
-    sleep(5);
+    Sleep::sleep(5);
 } finally {
     DB::rollBack();
 

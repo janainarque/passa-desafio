@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Support\Facades\DB;
+
 putenv('APP_ENV=testing');
 
 $_ENV['APP_ENV'] = 'testing';
@@ -12,10 +15,10 @@ require dirname(__DIR__, 2).'/vendor/autoload.php';
 $app = require dirname(__DIR__, 2).'/bootstrap/app.php';
 
 $app->make(
-    Illuminate\Contracts\Console\Kernel::class
+    Kernel::class
 )->bootstrap();
 
-$connection = Illuminate\Support\Facades\DB::connection();
+$connection = DB::connection();
 
 $database = $connection
     ->selectOne('SELECT current_database() AS name')

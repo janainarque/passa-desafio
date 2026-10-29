@@ -418,7 +418,7 @@ final class AuthorizationService
             return;
         }
 
-        if ($card === null) {
+        if (! $card instanceof Card) {
             foreach ($captures as $capture) {
                 PurchaseIssue::query()->firstOrCreate(
                     [

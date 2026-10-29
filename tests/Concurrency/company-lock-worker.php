@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\Company;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Sleep;
 
 require __DIR__.'/guard.php';
 
@@ -56,7 +57,7 @@ try {
     flush();
 
     // Permite que dois processos disputem o bloqueio.
-    sleep(8);
+    Sleep::sleep(8);
 } finally {
     DB::rollBack();
 

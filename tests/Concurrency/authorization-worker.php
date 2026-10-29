@@ -81,7 +81,7 @@ $request = Request::create(
     $body,
 );
 
-$kernel = app(Kernel::class);
+$kernel = resolve(Kernel::class);
 
 $response = $kernel->handle($request);
 $kernel->terminate($request, $response);
