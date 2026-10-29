@@ -246,3 +246,45 @@ it('nao processa a mesma authorization duas vezes', function (): void {
 
     $this->assertDatabaseCount('transactions', 2);
 });
+
+it('recusa nova autorizacao quando o saldo ja esta reservado', function (): void {
+    $company = Company::query()->firstOrFail();
+
+    $company->update([
+        'balance_cents' => 100000,
+        'reserved_cents' => 0,
+    ]);
+
+    sendAuthorization(authorizationPayload([
+        'id' => 'aut_first_reservation',
+        'card_token' => 'tok_ana',
+        'amount_cents' => 80000,
+    ]))
+        ->assertOk()
+        ->assertJson([
+            'decision' => 'approved',
+        ]);
+
+    $company->refresh();
+
+    expect($company->balance_cents)->toBe(100000)
+        ->and($company->reserved_cents)->toBe(80000)
+        ->and($company->balance_cents - $company->reserved_cents)->toBe(20000);
+
+    sendAuthorization(authorizationPayload([
+        'id' => 'aut_second_reservation',
+        'card_token' => 'tok_diego',
+        'amount_cents' => 30000,
+    ]))
+        ->assertOk()
+        ->assertJson([
+            'decision' => 'declined',
+            'reason' => 'insufficient_funds',
+        ]);
+
+    $company->refresh();
+
+    expect($company->balance_cents)->toBe(100000)
+        ->and($company->reserved_cents)->toBe(80000)
+        ->and($company->balance_cents - $company->reserved_cents)->toBe(20000);
+});
