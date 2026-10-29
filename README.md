@@ -23,8 +23,10 @@ Para executar o projeto localmente:
 Suba os serviços de infraestrutura:
 
 ```bash
-make env-up
+docker compose up -d --build
 ```
+
+Quem possui GNU Make instalado também pode utilizar `make env-up`.
 
 Instale e configure o projeto:
 
@@ -38,7 +40,7 @@ Caso prefira executar as etapas manualmente:
 composer install
 cp .env.example .env
 php artisan key:generate
-php artisan migrate:fresh --seed
+php artisan migrate --seed
 npm install
 npm run build
 ```
@@ -162,7 +164,7 @@ O projeto utiliza PostgreSQL.
 Para recriar completamente o banco com os dados necessários:
 
 ```bash
-php artisan migrate:fresh --seed
+php artisan migrate --seed
 ```
 
 O seed cria a empresa Acme, o depósito inicial de R$ 10.000,00, Marina e os quatro portadores exigidos pelos cenários.
@@ -200,6 +202,28 @@ A suíte cobre, entre outros pontos:
 - acesso ao painel;
 - depósito administrativo;
 - login e isolamento da área do funcionário.
+
+## Cenários do desafio — P1, P2 e P3
+
+### P1 — Compras com captura integral
+
+Ana realiza cinco compras no MCC `5812`, totalizando R$ 570,00. Todas são autorizadas e capturadas integralmente.
+
+Ao final, o limite mensal restante de Ana é R$ 1.430,00, o saldo da empresa é R$ 9.430,00 e não existem reservas pendentes.
+
+### P2 — Capturas parciais e valor adicional
+
+Uma autorização de R$ 800,00 no MCC `7011` recebe três capturas de R$ 300,00, R$ 300,00 e R$ 260,00.
+
+O total capturado é R$ 860,00. A reserva é liberada progressivamente e não é gerada issue, pois o valor está dentro da tolerância de 120% prevista para esse MCC.
+
+### P3 — Limite mensal e decisões de autorização
+
+Bruno, com limite mensal de R$ 500,00, autoriza uma compra de R$ 400,00, posteriormente capturada por R$ 480,00.
+
+Uma nova autorização de R$ 50,00 é recusada por `monthly_limit_exceeded`, enquanto outra de R$ 20,00 é aprovada, esgotando seu limite mensal.
+
+Os resultados detalhados e as decisões de modelagem estão documentados em [MODEL.md](MODEL.md).
 
 ## Qualidade
 
@@ -243,6 +267,15 @@ lockForUpdate()
 
 O objetivo é impedir perda de atualização e inconsistência entre limite do cartão, saldo e reserva da empresa quando mensagens são processadas simultaneamente.
 
+### Testes de concorrência
+
+Além da suíte automatizada, o projeto possui dois cenários com processos independentes e conexões ao PostgreSQL.
+
+- Autorizações simultâneas: `php tests/Concurrency/authorization-scenario.php` — verifica que autorizações concorrentes não reservam mais saldo do que o disponível.
+- Capturas simultâneas: `php tests/Concurrency/scenario.php` — verifica que requisições concorrentes para a mesma captura não geram movimentações financeiras duplicadas.
+
+Execute os scripts com o PostgreSQL disponível e o ambiente da aplicação configurado.
+
 ## Suposições
 
 O desafio trabalha apenas com a empresa Acme.
@@ -261,6 +294,6 @@ Mais detalhes e alternativas descartadas estão em [`MODEL.md`](MODEL.md).
 
 ## Documentação adicional
 
-[`MODEL.md`](MODEL.md) contém as decisões de domínio, riscos, garantias, cenários P2/P3 e alternativas descartadas.
+[`MODEL.md`](MODEL.md) contém as decisões de domínio, riscos, garantias, cenários P1/P2/P3 e alternativas descartadas.
 
 [`DEVELOPMENT.md`](DEVELOPMENT.md) contém anotações sobre o processo de implementação e os principais ajustes realizados durante o desenvolvimento.
