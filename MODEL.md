@@ -91,6 +91,7 @@ O ID externo é a principal chave de idempotência. Capturas também têm unicid
 | Processar duas vezes a mesma autorização             | IDs externos únicos, consulta de autorização existente e tratamento de conflito de unicidade      | testes de idempotência de autorização                       |
 | Duas requisições alterarem saldo simultaneamente     | `DB::transaction()` e `lockForUpdate()` em compra, empresa e saldo mensal                         | testes de autorização e cenários publicados                 |
 | Evento chegar antes da autorização                   | `Purchase` pendente armazena capture/cancellation e reconcilia depois                             | testes de eventos fora de ordem                             |
+| Eventos fora de ordem produzirem saldos diferentes   | Eventos pendentes são reconciliados e movimentações financeiras são idempotentes                  | `EventOrderConvergenceTest`                                 |
 | Capture de autorização recusada quebrar o estado     | captura é aceita, cria saldo mensal se necessário e registra `capture_for_declined_authorization` | `DeclinedAuthorizationCaptureTest` e `CaptureEdgeCasesTest` |
 | Capture após cancellation recriar reserva            | reserva permanece zero e é registrado `capture_after_cancellation`                                | testes de capture/cancellation                              |
 | Capture chegar depois de um `final=true`             | `has_final_capture` mantém reserva zero e status `settled`                                        | `CaptureEdgeCasesTest`                                      |
@@ -102,6 +103,25 @@ O ID externo é a principal chave de idempotência. Capturas também têm unicid
 | Alteração administrativa indevida                    | resources financeiros são somente leitura; depósito é a única rota `create`                       | `CompanyDepositTest` e teste de acesso administrativo       |
 
 ## 4. O que eu esperava dos cenários
+
+### P1
+
+Estado inicial relevante: Ana possui limite mensal de R$ 2.000,00 e a empresa possui R$ 10.000,00 de saldo.
+
+Foram realizadas cinco compras no cartão da Ana, todas no MCC `5812`, nos valores de R$ 129,90, R$ 45,00, R$ 300,00, R$ 80,10 e R$ 15,00. Cada autorização foi seguida de uma captura integral com `final: true`.
+
+O total capturado foi de R$ 570,00.
+
+`Ana available = 1.430,00`
+`Ana remaining = 1.430,00`
+`Company balance = 9.430,00`
+`Company reserved = 0,00`
+`Company available = 9.430,00`
+`Diego remaining = 50.000,00`
+
+O extrato da Ana fecha com `limit_remaining_cents = 143000`.
+
+O cenário foi validado pelo teste `PublishedScenarioP1Test`, com 1 teste aprovado e 21 asserções.
 
 ### P2
 
