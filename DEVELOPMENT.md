@@ -129,6 +129,8 @@ Usei `lockForUpdate()` nas entidades que representam estado financeiro atual, pr
 
 Também foi tratado conflito de unicidade na authorization para reduzir o risco de duas entregas simultâneas do mesmo fato aplicarem a decisão duas vezes.
 
+Também validei a concorrência com processos independentes e conexões reais ao PostgreSQL, utilizando dois cenários: autorizações simultâneas disputando o saldo disponível da empresa e capturas simultâneas da mesma compra. Os testes verificam que o sistema não reserva valores acima do saldo disponível e não registra movimentações financeiras duplicadas.
+
 ## Statements
 
 Mantive uma projeção atual para as decisões financeiras e transactions para o histórico.
@@ -191,8 +193,8 @@ Os cenários publicados P1, P2 e P3 também foram implementados como testes para
 Após os últimos ajustes funcionais, a suíte estava com:
 
 ```text
-71 testes
-418 assertions
+92 testes
+590 assertions
 ```
 
 ## IA
@@ -205,13 +207,16 @@ Algumas propostas foram descartadas ou simplificadas quando aumentavam a complex
 
 As decisões que alteraram efetivamente o modelo ou o comportamento do sistema foram registradas no `MODEL.md`.
 
-## Etapa final da entrega
+## Evolução para portfólio
 
-Depois de fechar a implementação funcional, os próximos passos são:
+O Passa foi desenvolvido inicialmente como parte de um desafio técnico Full Stack da 3Pontos Tech.
 
-```text
-php artisan test
-make check
-```
+Após o encerramento do processo seletivo, continuei evoluindo o projeto como parte do meu portfólio profissional.
 
-Com a qualidade verde, a etapa final é revisar os arquivos alterados, manter os commits incrementais na branch `develop`, publicar a branch e abrir o Pull Request para `main`.
+Nessa etapa, o foco foi revisar as regras financeiras, fortalecer a proteção contra concorrência, ampliar os testes automatizados e melhorar a documentação técnica.
+
+A suíte de testes chegou a 92 testes e 590 assertions. Também foram executados cenários independentes de concorrência, além das verificações de qualidade com Pint, Rector e PHPStan.
+
+O objetivo é manter um projeto que demonstre decisões de arquitetura, consistência de dados, segurança, testes e domínio do ecossistema Laravel.
+
+As próximas melhorias serão avaliadas conforme sua relevância técnica, evitando adicionar complexidade sem necessidade.

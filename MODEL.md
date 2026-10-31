@@ -86,21 +86,21 @@ O ID externo é a principal chave de idempotência. Capturas também têm unicid
 
 ## 3. Riscos e garantias
 
-| Risco                                                | Garantia no código                                                                                | Teste                                                       |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| Processar duas vezes a mesma autorização             | IDs externos únicos, consulta de autorização existente e tratamento de conflito de unicidade      | testes de idempotência de autorização                       |
-| Duas requisições alterarem saldo simultaneamente     | `DB::transaction()` e `lockForUpdate()` em compra, empresa e saldo mensal                         | testes de autorização e cenários publicados                 |
-| Evento chegar antes da autorização                   | `Purchase` pendente armazena capture/cancellation e reconcilia depois                             | testes de eventos fora de ordem                             |
-| Eventos fora de ordem produzirem saldos diferentes   | Eventos pendentes são reconciliados e movimentações financeiras são idempotentes                  | `EventOrderConvergenceTest`                                 |
-| Capture de autorização recusada quebrar o estado     | captura é aceita, cria saldo mensal se necessário e registra `capture_for_declined_authorization` | `DeclinedAuthorizationCaptureTest` e `CaptureEdgeCasesTest` |
-| Capture após cancellation recriar reserva            | reserva permanece zero e é registrado `capture_after_cancellation`                                | testes de capture/cancellation                              |
-| Capture chegar depois de um `final=true`             | `has_final_capture` mantém reserva zero e status `settled`                                        | `CaptureEdgeCasesTest`                                      |
-| Cancellation sem reserva gerar movimento inexistente | cancellation é armazenado, mas `Transaction` só nasce se havia reserva para liberar               | `CancellationEdgeCasesTest`                                 |
-| Campos extras de cancellation causarem 422           | regras específicas de capture só são aplicadas quando `type=capture`                              | `EventValidationTest`                                       |
-| Extrato mudar timestamps ou ordem                    | `Transaction` preserva `occurred_at`, referência e deltas; ordenação é por `occurred_at` e ID     | testes de statement                                         |
-| Funcionário visualizar dados de outro cartão         | `/my-card` sempre busca o cartão pelo usuário autenticado                                         | `MyCardTest`                                                |
-| Usuário comum acessar administração                  | `User::canAccessPanel()` libera apenas Marina                                                     | `AdminAccessTest`                                           |
-| Alteração administrativa indevida                    | resources financeiros são somente leitura; depósito é a única rota `create`                       | `CompanyDepositTest` e teste de acesso administrativo       |
+| Risco                                                | Garantia no código                                                                                | Teste                                                                             |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| Processar duas vezes a mesma autorização             | IDs externos únicos, consulta de autorização existente e tratamento de conflito de unicidade      | testes de idempotência de autorização                                             |
+| Duas requisições alterarem saldo simultaneamente     | `DB::transaction()` e `lockForUpdate()` em compra, empresa e saldo mensal                         | `tests/Concurrency/authorization-scenario.php` e `tests/Concurrency/scenario.php` |
+| Evento chegar antes da autorização                   | `Purchase` pendente armazena capture/cancellation e reconcilia depois                             | testes de eventos fora de ordem                                                   |
+| Eventos fora de ordem produzirem saldos diferentes   | Eventos pendentes são reconciliados e movimentações financeiras são idempotentes                  | `EventOrderConvergenceTest`                                                       |
+| Capture de autorização recusada quebrar o estado     | captura é aceita, cria saldo mensal se necessário e registra `capture_for_declined_authorization` | `DeclinedAuthorizationCaptureTest` e `CaptureEdgeCasesTest`                       |
+| Capture após cancellation recriar reserva            | reserva permanece zero e é registrado `capture_after_cancellation`                                | testes de capture/cancellation                                                    |
+| Capture chegar depois de um `final=true`             | `has_final_capture` mantém reserva zero e status `settled`                                        | `CaptureEdgeCasesTest`                                                            |
+| Cancellation sem reserva gerar movimento inexistente | cancellation é armazenado, mas `Transaction` só nasce se havia reserva para liberar               | `CancellationEdgeCasesTest`                                                       |
+| Campos extras de cancellation causarem 422           | regras específicas de capture só são aplicadas quando `type=capture`                              | `EventValidationTest`                                                             |
+| Extrato mudar timestamps ou ordem                    | `Transaction` preserva `occurred_at`, referência e deltas; ordenação é por `occurred_at` e ID     | testes de statement                                                               |
+| Funcionário visualizar dados de outro cartão         | `/my-card` sempre busca o cartão pelo usuário autenticado                                         | `MyCardTest`                                                                      |
+| Usuário comum acessar administração                  | `User::canAccessPanel()` libera apenas Marina                                                     | `AdminAccessTest`                                                                 |
+| Alteração administrativa indevida                    | resources financeiros são somente leitura; depósito é a única rota `create`                       | `CompanyDepositTest` e teste de acesso administrativo                             |
 
 ## 4. O que eu esperava dos cenários
 
