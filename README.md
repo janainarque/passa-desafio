@@ -1,12 +1,14 @@
 # Passa
 
-Implementação do desafio Full Stack da 3Pontos Tech.
+**Plataforma de autorização e controle financeiro para cartões corporativos pré-pagos.**
 
-O Passa representa um cartão corporativo pré-pago. A empresa mantém saldo disponível, os funcionários possuem cartões com limites e regras, e a rede envia autorizações, capturas e cancelamentos.
+Aplicação Full Stack desenvolvida com Laravel 13 e PostgreSQL para processar autorizações de compras, capturas e cancelamentos, mantendo a consistência dos saldos e limites financeiros.
 
-A solução foi desenvolvida com PHP 8.4, Laravel 13, FilamentPHP 5, PostgreSQL, Livewire, Blade, Tailwind e Pest.
+O projeto contempla processamento idempotente de eventos, proteção contra concorrência, reconciliação de eventos fora de ordem e rastreabilidade das movimentações financeiras.
 
-As decisões de modelagem e comportamento do domínio estão documentadas em [`MODEL.md`](MODEL.md).
+**Stack:** PHP 8.4 · Laravel 13 · PostgreSQL · Filament 5 · Livewire · Blade · Tailwind CSS · Pest.
+
+As decisões de arquitetura e comportamento do domínio estão documentadas em [`MODEL.md`](MODEL.md).
 
 ## Requisitos
 
