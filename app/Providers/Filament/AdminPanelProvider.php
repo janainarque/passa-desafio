@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Providers\Filament;
 
+use App\Filament\Admin\Widgets\CompanyOverview;
+use App\Filament\Admin\Widgets\OperationalOverview;
 use App\Filament\Shared\Pages\LoginPage;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -13,7 +15,6 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -30,6 +31,8 @@ final class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login(LoginPage::class)
+            ->brandName('Passa')
+            ->globalSearch(false)
             ->colors([
                 'primary' => Color::Emerald,
             ])
@@ -42,7 +45,8 @@ final class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
             ->sidebarFullyCollapsibleOnDesktop()
             ->widgets([
-                AccountWidget::class,
+                CompanyOverview::class,
+                OperationalOverview::class,
             ])
             ->middleware([
                 EncryptCookies::class,

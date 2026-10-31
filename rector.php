@@ -5,22 +5,18 @@ declare(strict_types=1);
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\CodingStyle\Rector\PostInc\PostIncDecToPreIncDecRector;
 use Rector\Config\RectorConfig;
-use Rector\EarlyReturn\Rector\If_\ChangeOrIfContinueToMultiContinueRector;
-use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRector;
 use Rector\TypeDeclaration\Rector\ArrowFunction\AddArrowFunctionReturnTypeRector;
 use RectorLaravel\Rector\Class_\AddExtendsAnnotationToModelFactoriesRector;
-use RectorLaravel\Rector\Class_\AnonymousMigrationsRector;
 use RectorLaravel\Rector\Class_\ModelCastsPropertyToCastsMethodRector;
 use RectorLaravel\Rector\Class_\ReplaceExpectsMethodsInTestsRector;
 use RectorLaravel\Rector\ClassMethod\AddGenericReturnTypeToRelationsRector;
 use RectorLaravel\Rector\Coalesce\ApplyDefaultInsteadOfNullCoalesceRector;
 use RectorLaravel\Rector\Empty_\EmptyToBlankAndFilledFuncRector;
-use RectorLaravel\Rector\FuncCall\NotFilledBlankFuncCallToBlankFilledFuncCallRector;
+use RectorLaravel\Rector\If_\AbortIfRector;
+use RectorLaravel\Rector\If_\ThrowIfRector;
 use RectorLaravel\Rector\MethodCall\AssertStatusToAssertMethodRector;
 use RectorLaravel\Rector\MethodCall\RefactorBlueprintGeometryColumnsRector;
-use RectorLaravel\Rector\MethodCall\ValidationRuleArrayStringValueToArrayRector;
 use RectorLaravel\Rector\PropertyFetch\ReplaceFakerInstanceWithHelperRector;
-use RectorLaravel\Rector\StaticCall\DispatchToHelperFunctionsRector;
 use RectorLaravel\Set\LaravelSetList;
 
 return RectorConfig::configure()
@@ -54,16 +50,12 @@ return RectorConfig::configure()
     )
     ->withPhpSets(php84: true)
     ->withRules([
-        ValidationRuleArrayStringValueToArrayRector::class,
-        AnonymousMigrationsRector::class,
         AssertStatusToAssertMethodRector::class,
         AddExtendsAnnotationToModelFactoriesRector::class,
         AddGenericReturnTypeToRelationsRector::class,
         ApplyDefaultInsteadOfNullCoalesceRector::class,
-        DispatchToHelperFunctionsRector::class,
         EmptyToBlankAndFilledFuncRector::class,
         ModelCastsPropertyToCastsMethodRector::class,
-        NotFilledBlankFuncCallToBlankFilledFuncCallRector::class,
         RefactorBlueprintGeometryColumnsRector::class,
         ReplaceExpectsMethodsInTestsRector::class,
         ReplaceFakerInstanceWithHelperRector::class,
@@ -80,8 +72,8 @@ return RectorConfig::configure()
         LaravelSetList::LARAVEL_LEGACY_FACTORIES_TO_CLASSES,
     ])
     ->withSkip([
-        AddOverrideAttributeToOverriddenMethodsRector::class,
-        ChangeOrIfContinueToMultiContinueRector::class,
         PostIncDecToPreIncDecRector::class,
         AddArrowFunctionReturnTypeRector::class,
+        ThrowIfRector::class,
+        AbortIfRector::class,
     ]);

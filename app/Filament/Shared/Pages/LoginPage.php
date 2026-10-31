@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Shared\Pages;
 
+use Filament\Actions\Action;
 use Filament\Auth\Pages\Login;
 
 final class LoginPage extends Login
@@ -19,5 +20,20 @@ final class LoginPage extends Login
                 'remember' => true,
             ]);
         }
+    }
+
+    public function getHeading(): string
+    {
+        return 'Painel Administrativo';
+    }
+
+    public function getSubheading(): string
+    {
+        return 'Acesso restrito à administração do Passa.';
+    }
+
+    protected function getAuthenticateFormAction(): Action
+    {
+        return parent::getAuthenticateFormAction()->label('Entrar');
     }
 }
