@@ -1,12 +1,94 @@
 # Passa
 
-Implementação do desafio Full Stack da 3Pontos Tech.
+**Plataforma de autorização e controle financeiro para cartões corporativos pré-pagos.**
 
-O Passa representa um cartão corporativo pré-pago. A empresa mantém saldo disponível, os funcionários possuem cartões com limites e regras, e a rede envia autorizações, capturas e cancelamentos.
+Aplicação full stack construída com **PHP 8.4, Laravel 13 e PostgreSQL** para processar autorizações, capturas e cancelamentos de compras, com controle de saldo empresarial, limites por cartão e registro auditável de movimentações.
 
-A solução foi desenvolvida com PHP 8.4, Laravel 13, FilamentPHP 5, PostgreSQL, Livewire, Blade, Tailwind e Pest.
+O núcleo financeiro contempla **idempotência, controle de concorrência, reconciliação de eventos recebidos fora de ordem e rastreabilidade**. A aplicação também oferece um painel administrativo e uma área exclusiva para funcionários.
 
-As decisões de modelagem e comportamento do domínio estão documentadas em [`MODEL.md`](MODEL.md).
+**Tecnologias:** PHP 8.4 · Laravel 13 · PostgreSQL · Filament 5 · Livewire · Blade · Tailwind CSS · Pest.
+
+> Projeto demonstrativo com empresa, usuários e transações fictícios. As imagens representam o sistema executado localmente.
+
+## Visão geral do produto
+
+### Área do funcionário
+
+O portador acessa seu próprio cartão corporativo, consulta o valor disponível para compras, o limite mensal restante, as restrições de uso, o extrato e o histórico de compras. Os dados são atualizados periodicamente sem recarregar a página inteira.
+
+![Área do funcionário — cartão, limite e saldo disponível](docs/images/employee-card.png)
+
+<details>
+<summary>Ver extrato e histórico de compras do funcionário</summary>
+
+**Extrato mensal** — reservas, liberações e liquidações.
+
+![Extrato mensal do funcionário](docs/images/employee-statement.png)
+
+**Histórico de compras** — compras finalizadas, recusadas e canceladas.
+
+![Histórico de compras do funcionário](docs/images/employee-purchases.png)
+
+</details>
+
+### Painel administrativo
+
+O painel oferece indicadores financeiros e operacionais, consultas de autorizações, compras, cartões e transações, além de acompanhamento de alertas e eventos pendentes. O registro de depósitos empresariais é a operação financeira de escrita disponível ao administrador.
+
+![Painel administrativo — visão geral financeira](docs/images/dashboard.png)
+
+<details>
+<summary>Ver autorizações, compras e movimentações financeiras</summary>
+
+**Autorizações** — decisões aprovadas e recusadas.
+
+![Lista de autorizações](docs/images/authorizations.png)
+
+**Detalhes de uma autorização** — dados recebidos da rede e decisão de processamento.
+
+![Detalhes da autorização](docs/images/authorization-details.png)
+
+**Compras** — estados de liquidação, recusa e cancelamento.
+
+![Lista de compras](docs/images/purchases.png)
+
+**Transações** — trilha de depósitos, reservas, liberações e capturas.
+
+![Histórico de transações](docs/images/transactions.png)
+
+</details>
+
+### Acesso por perfil
+
+O sistema mantém fluxos de autenticação distintos para funcionários e administradores.
+
+<details>
+<summary>Ver telas de acesso</summary>
+
+**Funcionário**
+
+![Login do funcionário](docs/images/employee-login.png)
+
+**Administrador**
+
+![Login administrativo](docs/images/admin-login.png)
+
+</details>
+
+## Arquitetura e decisões técnicas
+
+- **API da rede:** recebe autorizações, capturas e cancelamentos e disponibiliza consultas de saldo e extrato.
+- **Autenticidade das requisições:** verificação HMAC-SHA256 nos endpoints da rede.
+- **Serviços de domínio:** concentram as regras de autorização, captura, cancelamento e depósitos.
+- **Consistência financeira:** operações transacionais no PostgreSQL, com bloqueios de linha quando necessário.
+- **Idempotência:** evita reaplicação financeira de eventos repetidos.
+- **Eventos fora de ordem:** eventos recebidos antes da autorização podem ser persistidos e conciliados posteriormente.
+- **Rastreabilidade:** projeções de saldo para decisões rápidas e histórico de transações para auditoria e extratos.
+- **Interfaces:** Filament para administração e área do funcionário com Laravel, Blade e Livewire.
+
+Os detalhes do modelo financeiro, as garantias, as limitações e as alternativas consideradas estão documentados em [`MODEL.md`](MODEL.md).
+
+---
 
 ## Requisitos
 
@@ -23,10 +105,8 @@ Para executar o projeto localmente:
 Suba os serviços de infraestrutura:
 
 ```bash
-docker compose up -d --build
+make env-up
 ```
-
-Quem possui GNU Make instalado também pode utilizar `make env-up`.
 
 Instale e configure o projeto:
 
@@ -40,7 +120,7 @@ Caso prefira executar as etapas manualmente:
 composer install
 cp .env.example .env
 php artisan key:generate
-php artisan migrate --seed
+php artisan migrate:fresh --seed
 npm install
 npm run build
 ```
@@ -76,7 +156,7 @@ Senha: password
 
 Somente Marina possui acesso ao painel.
 
-O painel permite consultar cartões, compras, transações, autorizações, alertas financeiros e eventos aguardando autorização.
+O painel permite consultar cartões, compras, transactions, autorizações, issues e eventos pendentes.
 
 A única operação financeira de escrita disponível no painel é o registro de depósito para a empresa.
 
@@ -111,7 +191,7 @@ Senha para todos:
 password
 ```
 
-A tela `/my-card` exibe o cartão do usuário autenticado, disponível atual, limite mensal restante, extrato do mês e histórico das compras.
+A tela `/my-card` exibe o cartão do usuário autenticado, disponível atual, limite mensal restante, statement do mês e histórico das compras.
 
 Os dados dinâmicos são atualizados através de polling do Livewire a cada 5 segundos, sem recarregar a página inteira.
 
@@ -164,10 +244,10 @@ O projeto utiliza PostgreSQL.
 Para recriar completamente o banco com os dados necessários:
 
 ```bash
-php artisan migrate --seed
+php artisan migrate:fresh --seed
 ```
 
-O seed cria a empresa Acme, o depósito inicial de R$ 10.000,00, Marina e os quatro portadores exigidos pelos cenários.
+O seed cria a empresa Acme, o depósito inicial de R$ 10.000,00, Marina e quatro portadores utilizados nos cenários.
 
 ## Testes
 
@@ -203,28 +283,6 @@ A suíte cobre, entre outros pontos:
 - depósito administrativo;
 - login e isolamento da área do funcionário.
 
-## Cenários do desafio — P1, P2 e P3
-
-### P1 — Compras com captura integral
-
-Ana realiza cinco compras no MCC `5812`, totalizando R$ 570,00. Todas são autorizadas e capturadas integralmente.
-
-Ao final, o limite mensal restante de Ana é R$ 1.430,00, o saldo da empresa é R$ 9.430,00 e não existem reservas pendentes.
-
-### P2 — Capturas parciais e valor adicional
-
-Uma autorização de R$ 800,00 no MCC `7011` recebe três capturas de R$ 300,00, R$ 300,00 e R$ 260,00.
-
-O total capturado é R$ 860,00. A reserva é liberada progressivamente e não é gerada issue, pois o valor está dentro da tolerância de 120% prevista para esse MCC.
-
-### P3 — Limite mensal e decisões de autorização
-
-Bruno, com limite mensal de R$ 500,00, autoriza uma compra de R$ 400,00, posteriormente capturada por R$ 480,00.
-
-Uma nova autorização de R$ 50,00 é recusada por `monthly_limit_exceeded`, enquanto outra de R$ 20,00 é aprovada, esgotando seu limite mensal.
-
-Os resultados detalhados e as decisões de modelagem estão documentados em [MODEL.md](MODEL.md).
-
 ## Qualidade
 
 Para executar todas as verificações de qualidade:
@@ -248,8 +306,7 @@ CardMonthBalance.limit_remaining_cents
 Purchase.reserved_amount_cents
 ```
 
-As transações preservam cada movimentação financeira e são utilizadas
-para construir os extratos.
+As `transactions` preservam cada movimentação financeira e são utilizadas para construção dos statements.
 
 Os valores monetários são sempre armazenados em centavos inteiros.
 
@@ -267,18 +324,9 @@ lockForUpdate()
 
 O objetivo é impedir perda de atualização e inconsistência entre limite do cartão, saldo e reserva da empresa quando mensagens são processadas simultaneamente.
 
-### Testes de concorrência
-
-Além da suíte automatizada, o projeto possui dois cenários com processos independentes e conexões ao PostgreSQL.
-
-- Autorizações simultâneas: `php tests/Concurrency/authorization-scenario.php` — verifica que autorizações concorrentes não reservam mais saldo do que o disponível.
-- Capturas simultâneas: `php tests/Concurrency/scenario.php` — verifica que requisições concorrentes para a mesma captura não geram movimentações financeiras duplicadas.
-
-Execute os scripts com o PostgreSQL disponível e o ambiente da aplicação configurado.
-
 ## Suposições
 
-O desafio trabalha apenas com a empresa Acme.
+A implementação de demonstração utiliza a empresa fictícia Acme.
 
 O identificador externo recebido da rede é preservado separadamente do ID interno do banco.
 
@@ -294,6 +342,6 @@ Mais detalhes e alternativas descartadas estão em [`MODEL.md`](MODEL.md).
 
 ## Documentação adicional
 
-[`MODEL.md`](MODEL.md) contém as decisões de domínio, riscos, garantias, cenários P1/P2/P3 e alternativas descartadas.
+[`MODEL.md`](MODEL.md) contém as decisões de domínio, riscos, garantias, cenários P2/P3 e alternativas descartadas.
 
 [`DEVELOPMENT.md`](DEVELOPMENT.md) contém anotações sobre o processo de implementação e os principais ajustes realizados durante o desenvolvimento.
