@@ -345,3 +345,15 @@ Mais detalhes e alternativas descartadas estão em [`MODEL.md`](MODEL.md).
 [`MODEL.md`](MODEL.md) contém as decisões de domínio, riscos, garantias, cenários P2/P3 e alternativas descartadas.
 
 [`DEVELOPMENT.md`](DEVELOPMENT.md) contém anotações sobre o processo de implementação e os principais ajustes realizados durante o desenvolvimento.
+
+## Origem e créditos
+
+O Passa foi desenvolvido a partir do [template público da 3Pontos Tech](https://github.com/3pontos-tech/mid-fullstack-test), disponibilizado sob licença MIT.
+
+A implementação contempla a modelagem do domínio financeiro, as regras de autorização e movimentação de valores, o tratamento de concorrência e idempotência, as interfaces administrativas e dos funcionários e os testes automatizados.
+
+As decisões de arquitetura, premissas, limitações e alternativas consideradas estão documentadas no [`MODEL.md`](MODEL.md).
+
+Este repositório apresenta uma implementação demonstrativa, desenvolvida e posteriormente aprimorada para fins de estudo, evolução técnica e portfólio profissional. Não representa um produto oficial da 3Pontos Tech.
+
+A licença original e os respectivos créditos foram preservados no arquivo [`LICENSE`](LICENSE).
