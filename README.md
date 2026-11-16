@@ -99,6 +99,7 @@ Para executar o projeto localmente:
 - Node.js / npm
 - Docker
 - Docker Compose
+- Make (opcional; utilizado pelos atalhos `make`)
 
 ## Instalação
 
@@ -106,6 +107,12 @@ Suba os serviços de infraestrutura:
 
 ```bash
 make env-up
+```
+
+Se não tiver o Make instalado (por exemplo, no Windows), execute o comando equivalente diretamente com Docker Compose:
+
+```bash
+docker compose up --detach --build
 ```
 
 Instale e configure o projeto:
