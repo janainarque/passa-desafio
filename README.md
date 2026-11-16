@@ -132,6 +132,18 @@ npm install
 npm run build
 ```
 
+## Parando o ambiente local
+
+Para interromper os serviços sem apagar os dados do PostgreSQL, use:
+
+```bash
+make env-stop
+```
+
+Sem Make, o comando equivalente é `docker compose stop`. Para iniciar os serviços novamente, execute `make env-up` ou `docker compose up --detach --build`.
+
+> **Atenção:** `make env-down` executa `docker compose down --rmi all --volumes`, removendo containers, imagens e volumes. Isso **apaga os dados locais** do PostgreSQL. Use esse comando apenas quando quiser descartar o ambiente de desenvolvimento.
+
 ## Executando a aplicação
 
 Para iniciar a aplicação com servidor Laravel, filas, logs e Vite:

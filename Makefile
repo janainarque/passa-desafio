@@ -58,8 +58,12 @@ migrate-fresh: ## Run migrations and seed the database
 env-up: ## Start the development environment (Postgres, Redis, Mailpit)
 	@docker compose up --detach --build
 
+.PHONY: env-stop
+env-stop: ## Stop development services without deleting database data
+	@docker compose stop
+
 .PHONY: env-down
-env-down: ## Stop the development environment and remove volumes
+env-down: ## Remove development services, images and volumes (deletes local database data)
 	@docker compose down --rmi all --volumes
 
 .PHONY: dev
