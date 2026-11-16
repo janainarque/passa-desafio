@@ -17,6 +17,10 @@ beforeEach(function (): void {
     $this->seed();
 });
 
+afterEach(function (): void {
+    Date::setTestNow();
+});
+
 it('funcionario visualiza apenas seu proprio cartao', function (): void {
     $ana = User::query()
         ->where('email', 'ana@acme.test')
@@ -79,6 +83,9 @@ it('nao exibe compras de outro funcionario', function (): void {
 });
 
 it('atualiza limite e historico da Ana apos autorizacao e captura', function (): void {
+    // A autorização e a captura são de outubro; o saldo exibido é mensal.
+    Date::setTestNow('2026-10-08 12:00:00');
+
     $ana = User::query()
         ->where('email', 'ana@acme.test')
         ->firstOrFail();
